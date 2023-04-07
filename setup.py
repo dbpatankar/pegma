@@ -21,7 +21,7 @@ setup(
     },
     packages=["pegma"],
     install_requires=[
-        "PySide6",
+        "pyside6",
         "earthquakepy",
         "matplotlib",
         "numpy",
