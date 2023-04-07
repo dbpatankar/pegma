@@ -20,7 +20,7 @@ setup(
         "pegma": ["defaultConfigs/*.rc"],
     },
     packages=[
-        "ui",
+        "pegma.ui",
     ],
     install_requires=[
         "pyside6",
