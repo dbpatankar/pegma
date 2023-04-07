@@ -34,7 +34,7 @@ import pickle
 
 from . import AppClasses
 from . import UiClasses
-from ui import ui_mainwindow
+import ui.ui_mainwindow
 # from AppClasses import *
 # from UiClasses import *
 # from ui.ui_mainwindow import *
@@ -47,7 +47,7 @@ import configparser
 
 
 # My app class
-class App(ui_mainwindow.Ui_MainWindow):
+class App(ui.ui_mainwindow.Ui_MainWindow):
 
     def __init__(self, window, dataDict) -> None:
         self.setupUi(window)
@@ -269,7 +269,7 @@ class App(ui_mainwindow.Ui_MainWindow):
         """Show help browser."""
         self.browser = HelpBrowser()
         self.browser.setWindowTitle("PEGMA Documentation")
-        self.browser.webView.load(ui_mainwindow.QUrl("qrc:/docs/index.html"))
+        self.browser.webView.load(ui.ui_mainwindow.QUrl("qrc:/docs/index.html"))
         self.browser.show()
 
     ######################################
@@ -906,7 +906,7 @@ def add_persistant_config(ax, confFile):
 
 def run_app(data={"data": [], "plotConfigFiles": plotConfigFiles}):
     qapp = QApplication(sys.argv)
-    mw = ui_mainwindow.QMainWindow()
+    mw = ui.ui_mainwindow.QMainWindow()
     app = App(mw, data)
     mw.show()
     sys.exit(qapp.exec())
