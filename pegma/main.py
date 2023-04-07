@@ -433,7 +433,7 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
             self.iitsTableModel = UiClasses.TsTableModel(self.data[index.row()].iits, self.clipboard)
             self.dispTable.setModel(self.iitsTableModel)
 
-            self.tsProps = UiClasses.TimeseriesProps(self.data[index.row()], self.clipboard)
+            self.tsProps = AppClasses.TimeseriesProps(self.data[index.row()], self.clipboard)
             self.tsPropsTableModel = UiClasses.TsPropsTableModel(self.tsProps)
             # self.tsPropsTableModel = TsPropsTableModel(self.data[index.row()], self.clipboard)
             self.tsPropsTableView.setModel(self.tsPropsTableModel)
