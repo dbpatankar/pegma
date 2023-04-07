@@ -34,7 +34,7 @@ import pickle
 
 from . import AppClasses
 from . import UiClasses
-from . import ui
+import ui
 # from AppClasses import *
 # from UiClasses import *
 # from ui.ui_mainwindow import *
