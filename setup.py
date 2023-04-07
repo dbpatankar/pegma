@@ -29,7 +29,7 @@ setup(
     ],
     entry_points={
     'console_scripts': [
-        'pegma = pegma.cli:run_app',
+        'pegma = pegma.main:run_app',
     ],
     },
     python_requires=">=3.6",
