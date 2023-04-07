@@ -496,7 +496,7 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         idx = self.selectedTsIndex
         winLen = self.windowSizeSpinBox.value()
         poly = self.polyDegSpinBox.value()
-        freqTable = UiClasses.FreqChar(self.data[idx].fs, self.data[idx].ps, winLen, poly)
+        freqTable = AppClasses.FreqChar(self.data[idx].fs, self.data[idx].ps, winLen, poly)
         self.data[idx].freqTable = freqTable
         self.update_freq_data_and_plot()
 
