@@ -15,7 +15,7 @@ setup(
     author="Digvijay Patankar",
     author_email="dbpatankar@gmail.com",
     license="GNU GPLv3",
-    package_dir={"": "quakepygui"},
+    #package_dir={"": "quakepygui"},
     package_data={
         "pegma": ["defaultConfigs/*.rc"],
     },
