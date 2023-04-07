@@ -38,8 +38,8 @@ from . import ui
 # from AppClasses import *
 # from UiClasses import *
 # from ui.ui_mainwindow import *
-from HelpSystem import HelpBrowser
-from plotConfig import plotConfigFiles, pegmaConfigDir
+from . import HelpSystem   # import HelpBrowser
+from . import plotConfig    # import plotConfigFiles, pegmaConfigDir
 import configparser
 
 # import asyncio
@@ -267,7 +267,7 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
 
     def show_help_window(self, checked):
         """Show help browser."""
-        self.browser = HelpBrowser()
+        self.browser = HelpSystem.HelpBrowser()
         self.browser.setWindowTitle("PEGMA Documentation")
         self.browser.webView.load(ui.ui_mainwindow.QUrl("qrc:/docs/index.html"))
         self.browser.show()
@@ -893,7 +893,7 @@ def set_default_config():
     f = os.path.abspath(__file__)
     defConfigPath = Path(f).parent / "defaultConfigs"
     for file in defConfigPath.glob("*.rc"):
-        shutil.copy(file, pegmaConfigDir)
+        shutil.copy(file, plotConfig.pegmaConfigDir)
 
 
 def add_persistant_config(ax, confFile):
@@ -904,7 +904,7 @@ def add_persistant_config(ax, confFile):
         set_persistant_config(ax, confFile)
 
 
-def run_app(data={"data": [], "plotConfigFiles": plotConfigFiles}):
+def run_app(data={"data": [], "plotConfigFiles": plotConfig.plotConfigFiles}):
     qapp = QApplication(sys.argv)
     mw = ui.ui_mainwindow.QMainWindow()
     app = App(mw, data)
@@ -921,6 +921,6 @@ if __name__ == "__main__":
     data = []
     dataDict = {
         "data": data,
-        "plotConfigFiles": plotConfigFiles
+        "plotConfigFiles": plotConfig.plotConfigFiles
     }
     run_app(dataDict)
