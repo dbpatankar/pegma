@@ -578,7 +578,7 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         filename = dialog.getOpenFileName()[0]
         ds = np.genfromtxt(filename, delimiter=",")
         self.ds = AppClasses.DesignSpectrum(ds[:, 0], ds[:, 1])
-        dsModel = AppClasses.DesignSpecModel(self.ds)
+        dsModel = UiClasses.DesignSpecModel(self.ds)
         self.designSpecView.setModel(dsModel)
         self.plot_design_spectrum(self.ds)
 
