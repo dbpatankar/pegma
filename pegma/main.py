@@ -472,7 +472,7 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         xmax = self.tsXmaxDspinBox.value()
         if (xmax <= 0.0) or (xmax <= xmin):
             xmax = None
-        self.tsProps = UiClasses.TimeseriesProps(self.data[self.selectedTsIndex], self.clipboard, xmin=xmin, xmax=xmax)
+        self.tsProps = AppClasses.TimeseriesProps(self.data[self.selectedTsIndex], self.clipboard, xmin=xmin, xmax=xmax)
         self.tsPropsTableModel = UiClasses.TsPropsTableModel(self.tsProps)
         self.tsPropsTableView.setModel(self.tsPropsTableModel)
         self.tsPropCopyBtn.clicked.connect(self.tsPropsTableModel.copy_to_clipboard)
