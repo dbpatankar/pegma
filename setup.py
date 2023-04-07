@@ -15,7 +15,7 @@ setup(
     author="Digvijay Patankar",
     author_email="dbpatankar@gmail.com",
     license="GNU GPLv3",
-    package_dir={"": "src"},
+    # package_dir={"": "src"},
     package_data={
         "pegma": ["defaultConfigs/*.rc"],
     },
