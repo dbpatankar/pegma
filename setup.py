@@ -19,7 +19,9 @@ setup(
     package_data={
         "pegma": ["defaultConfigs/*.rc"],
     },
-    packages=find_packages(),
+    packages=[
+        "pegma", "pegma.ui",
+    ],
     install_requires=[
         "pyside6",
         "earthquakepy",
