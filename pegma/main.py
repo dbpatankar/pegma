@@ -18,21 +18,26 @@ import os
 import shutil
 from pathlib import Path
 import scipy.signal
+import numpy as np
+import earthquakepy as ep
 
 # PySide imports
-from PySide6.QtWidgets import QApplication, QAbstractItemView, QFileDialog, QMessageBox, QSpacerItem, QSizePolicy
+from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox, QSizePolicy, QWidget, QHeaderView
 from PySide6 import QtGui
 from PySide6.QtGui import QAccessible, QAction, QIcon, QPixmap
-from PySide6.QtCore import QModelIndex, QItemSelectionModel
+from PySide6.QtCore import QModelIndex, QItemSelectionModel, Qt
 
 import matplotlib as mpl
 mpl.use('QtAgg', force=True)
 from matplotlib import colors
 import pickle
 
-from AppClasses import *
-from UiClasses import *
-from ui.ui_mainwindow import *
+from . import AppClasses
+from . import UiClasses
+from ui import ui_mainwindow
+# from AppClasses import *
+# from UiClasses import *
+# from ui.ui_mainwindow import *
 from HelpSystem import HelpBrowser
 from plotConfig import plotConfigFiles, pegmaConfigDir
 import configparser
@@ -42,7 +47,7 @@ import configparser
 
 
 # My app class
-class App(Ui_MainWindow):
+class App(ui_mainwindow.Ui_MainWindow):
 
     def __init__(self, window, dataDict) -> None:
         self.setupUi(window)
@@ -215,7 +220,7 @@ class App(Ui_MainWindow):
         msgBox.setIconPixmap(QPixmap(u":/logo/logo_small_150px.png"))
         msgBox.exec()
 
-    def save_session_to_disk(self, signal):
+    def save_session_to_disk(self, sig):
         dialog = QFileDialog()
         dialog.setDefaultSuffix("pgm")
         dialog.setAcceptMode(QFileDialog.AcceptSave)
@@ -226,7 +231,7 @@ class App(Ui_MainWindow):
             with open(filename, "wb") as fp:
                 pickle.dump(self.data, fp)
 
-    def load_session_from_disk(self, signal):
+    def load_session_from_disk(self, sig):
         dialog = QFileDialog()
         dialog.setDefaultSuffix("pgm")
         filename = dialog.getOpenFileName(filter="PEGMA file (*.pgm)")[0]
@@ -237,7 +242,7 @@ class App(Ui_MainWindow):
             for i in range(len(_temp)):
                 self.tsNameModel.insertRows(len(self.data), 1, _temp[i])
 
-    def append_session_from_disk(self, signal):
+    def append_session_from_disk(self, sig):
         dialog = QFileDialog()
         dialog.setDefaultSuffix("pgm")
         filename = dialog.getOpenFileName(filter="PEGMA file (*.pgm)")[0]
@@ -247,7 +252,7 @@ class App(Ui_MainWindow):
             for i in range(len(_temp)):
                 self.tsNameModel.insertRows(len(self.data), 1, _temp[i])
 
-    def clear_current_session(self, signal):
+    def clear_current_session(self, sig):
         dialog = QMessageBox()
         dialog.setText("You are about to clear all the data from current session. This cannot be undone! Are you sure?")
         dialog.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
@@ -264,7 +269,7 @@ class App(Ui_MainWindow):
         """Show help browser."""
         self.browser = HelpBrowser()
         self.browser.setWindowTitle("PEGMA Documentation")
-        self.browser.webView.load(QUrl("qrc:/docs/index.html"))
+        self.browser.webView.load(ui_mainwindow.QUrl("qrc:/docs/index.html"))
         self.browser.show()
 
     ######################################
@@ -356,7 +361,7 @@ class App(Ui_MainWindow):
                     scale_factor=self.scaleFactorBox1.value())
                 ts.scale_factor = f"{self.scaleFactorBox1.value():.4f}"
                 source = "peernga"
-                tts = TimeSeries([ts], source=source)
+                tts = AppClasses.TimeSeries([ts], source=source)
                 break
             elif self.tsSourceCosmosvdc.isChecked():
                 ts, its, iits = ep.read_cosmos_vdc_file(
@@ -368,7 +373,7 @@ class App(Ui_MainWindow):
                     ])
                 ts.scale_factor = f"{self.scaleFactorBox1.value():.4f}, {self.scaleFactorBox2.value():.4f}, {self.scaleFactorBox3.value():.4f}"
                 source = "cosmosvdc"
-                tts = TimeSeries([ts, its, iits], source=source)
+                tts = AppClasses.TimeSeries([ts, its, iits], source=source)
                 break
             elif self.tsSourceRaw.isChecked():
                 ts = ep.read_raw_timeseries_file(
@@ -377,7 +382,7 @@ class App(Ui_MainWindow):
                     delimiter=self.delimBox.text())
                 ts.scale_factor = f"{self.scaleFactorBox1.value():.4f}"
                 source = "raw"
-                tts = TimeSeries([ts], source=source)
+                tts = AppClasses.TimeSeries([ts], source=source)
                 break
             elif self.tsSourceCustom.isChecked():
                 if self.customLineEnd.value() < 0:
@@ -392,7 +397,7 @@ class App(Ui_MainWindow):
                     scale_factor=self.scaleFactorBox1.value())
                 ts.scale_factor = f"{self.scaleFactorBox1.value():.4f}"
                 source = "custom"
-                tts = TimeSeries([ts], source=source)
+                tts = AppClasses.TimeSeries([ts], source=source)
                 break
             else:
                 dialog = QMessageBox()
@@ -408,7 +413,7 @@ class App(Ui_MainWindow):
         self.update_output_browser()
 
     def update_data(self, index=None):
-        self.tsNameModel = TsListModel(self.data)
+        self.tsNameModel = UiClasses.TsListModel(self.data)
         self.tsListView.setModel(self.tsNameModel)
 
         # selectedTs = self.tsListView.selectedIndexes()
@@ -419,31 +424,31 @@ class App(Ui_MainWindow):
             self.tsListView.selectionModel().select(indexObject, QItemSelectionModel.Select)
             self.apply_baseline_correction(self.data[index.row()])
 
-            self.tsTableModel = TsTableModel(self.data[index.row()].ts, self.clipboard)
+            self.tsTableModel = UiClasses.TsTableModel(self.data[index.row()].ts, self.clipboard)
             self.accTable.setModel(self.tsTableModel)
 
-            self.itsTableModel = TsTableModel(self.data[index.row()].its, self.clipboard)
+            self.itsTableModel = UiClasses.TsTableModel(self.data[index.row()].its, self.clipboard)
             self.velTable.setModel(self.itsTableModel)
 
-            self.iitsTableModel = TsTableModel(self.data[index.row()].iits, self.clipboard)
+            self.iitsTableModel = UiClasses.TsTableModel(self.data[index.row()].iits, self.clipboard)
             self.dispTable.setModel(self.iitsTableModel)
 
-            self.tsProps = TimeseriesProps(self.data[index.row()], self.clipboard)
-            self.tsPropsTableModel = TsPropsTableModel(self.tsProps)
+            self.tsProps = UiClasses.TimeseriesProps(self.data[index.row()], self.clipboard)
+            self.tsPropsTableModel = UiClasses.TsPropsTableModel(self.tsProps)
             # self.tsPropsTableModel = TsPropsTableModel(self.data[index.row()], self.clipboard)
             self.tsPropsTableView.setModel(self.tsPropsTableModel)
 
-            self.metaTableModel = MetadataTable(self.data[index.row()].ts)
+            self.metaTableModel = UiClasses.MetadataTable(self.data[index.row()].ts)
             self.metaTableView.setModel(self.metaTableModel)
             self.metaTableView.verticalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
-            self.fsTableModel = FourierTableModel(self.data[index.row()], self.clipboard)
+            self.fsTableModel = UiClasses.FourierTableModel(self.data[index.row()], self.clipboard)
             self.fsTableView.setModel(self.fsTableModel)
 
-            self.rsTableModel = ResponseSpectraTableModel(self.data[index.row()].rs, self.clipboard)
+            self.rsTableModel = UiClasses.ResponseSpectraTableModel(self.data[index.row()].rs, self.clipboard)
             self.rsTableView.setModel(self.rsTableModel)
 
-            self.freqTableModel = FrequencyCharacteristicsTableModel(self.data[index.row()].freqTable, self.clipboard)
+            self.freqTableModel = UiClasses.FrequencyCharacteristicsTableModel(self.data[index.row()].freqTable, self.clipboard)
             self.freqCharTableView.setModel(self.freqTableModel)
 
             self.tsToClipboardBtn.clicked.connect(self.tsTableModel.copy_to_clipboard)
@@ -467,8 +472,8 @@ class App(Ui_MainWindow):
         xmax = self.tsXmaxDspinBox.value()
         if (xmax <= 0.0) or (xmax <= xmin):
             xmax = None
-        self.tsProps = TimeseriesProps(self.data[self.selectedTsIndex], self.clipboard, xmin=xmin, xmax=xmax)
-        self.tsPropsTableModel = TsPropsTableModel(self.tsProps)
+        self.tsProps = UiClasses.TimeseriesProps(self.data[self.selectedTsIndex], self.clipboard, xmin=xmin, xmax=xmax)
+        self.tsPropsTableModel = UiClasses.TsPropsTableModel(self.tsProps)
         self.tsPropsTableView.setModel(self.tsPropsTableModel)
         self.tsPropCopyBtn.clicked.connect(self.tsPropsTableModel.copy_to_clipboard)
         tts = self.data[self.selectedTsIndex]
@@ -481,17 +486,17 @@ class App(Ui_MainWindow):
     ######################################
     def update_freq_data_and_plot(self):
         self.get_selected_timeseries_index()
-        self.freqTableModel = FrequencyCharacteristicsTableModel(self.data[self.selectedTsIndex].freqTable, self.clipboard)
+        self.freqTableModel = UiClasses.FrequencyCharacteristicsTableModel(self.data[self.selectedTsIndex].freqTable, self.clipboard)
         self.freqCharTableView.setModel(self.freqTableModel)
         self.freqCharCopyBtn.clicked.connect(self.freqTableModel.copy_to_clipboard)
         self.update_fs_amp_plot(self.data[self.selectedTsIndex])
 
-    def update_tp_bandwidth_data(self, tts: TimeSeries):
+    def update_tp_bandwidth_data(self, tts: AppClasses.TimeSeries):
         self.get_selected_timeseries_index()
         idx = self.selectedTsIndex
         winLen = self.windowSizeSpinBox.value()
         poly = self.polyDegSpinBox.value()
-        freqTable = FreqChar(self.data[idx].fs, self.data[idx].ps, winLen, poly)
+        freqTable = UiClasses.FreqChar(self.data[idx].fs, self.data[idx].ps, winLen, poly)
         self.data[idx].freqTable = freqTable
         self.update_freq_data_and_plot()
 
@@ -533,7 +538,7 @@ class App(Ui_MainWindow):
     ## RESPONSE SPECTRA TAB SLOTS
     ######################################
     def update_rs_trip_plot_data(self, index: QModelIndex):
-        self.rsTableModel = ResponseSpectraTableModel(self.data[index.row()].rs, self.clipboard)
+        self.rsTableModel = UiClasses.ResponseSpectraTableModel(self.data[index.row()].rs, self.clipboard)
         self.rsTableView.setModel(self.rsTableModel)
         self.rsToClipboardBtn.clicked.connect(self.rsTableModel.copy_to_clipboard)
         self.update_psa_plot(self.data[index.row()])
@@ -558,8 +563,8 @@ class App(Ui_MainWindow):
     ######################################
     ## GM SCALING TAB SLOTS
     ######################################
-    def plot_design_spectrum(self, ds: DesignSpectrum):
-        dsPlotWidget = MatplotlibWidget(configFile=self.plotConfigFiles["designSpectrum"])
+    def plot_design_spectrum(self, ds: AppClasses.DesignSpectrum):
+        dsPlotWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["designSpectrum"])
         self.scalingSpecPlotLayout.addWidget(dsPlotWidget)
         dsPlotWidget.axes.clear()
         dsPlotWidget.axes.plot(ds.T, ds.Y)
@@ -572,8 +577,8 @@ class App(Ui_MainWindow):
         dialog = QFileDialog(parent=None, caption="Select design spectrum file.")
         filename = dialog.getOpenFileName()[0]
         ds = np.genfromtxt(filename, delimiter=",")
-        self.ds = DesignSpectrum(ds[:, 0], ds[:, 1])
-        dsModel = DesignSpecModel(self.ds)
+        self.ds = AppClasses.DesignSpectrum(ds[:, 0], ds[:, 1])
+        dsModel = AppClasses.DesignSpecModel(self.ds)
         self.designSpecView.setModel(dsModel)
         self.plot_design_spectrum(self.ds)
 
@@ -588,18 +593,18 @@ class App(Ui_MainWindow):
         Sa = np.max(np.abs(np.real(a)))
         scale_factor = designSa / Sa
         scaled_y = self.data[self.selectedTsIndex].ts.y * scale_factor
-        ts = ep.timeseries.TimeSeries(self.data[self.selectedTsIndex].ts.t, scaled_y)
+        ts = ep.timeseries.AppClasses.TimeSeries(self.data[self.selectedTsIndex].ts.t, scaled_y)
         ts.T = T
         ts.xi = xi
         ts.GMscale_factor = scale_factor
         origPath = Path(self.data[self.selectedTsIndex].ts.filepath)
         pseudoPath = f"{origPath.parent}/__{origPath.name}"
         ts.filepath = pseudoPath
-        scaledTsModel = TsTableModel(ts, self.clipboard)
+        scaledTsModel = UiClasses.TsTableModel(ts, self.clipboard)
         self.scaledGMView.setModel(scaledTsModel)
         self.scaledGMCopyToClipboardBtn.clicked.connect(scaledTsModel.copy_to_clipboard)
         # Add scaled ts to the list
-        self.scaledTs = TimeSeries([ts], "raw", xi=xi)
+        self.scaledTs = AppClasses.TimeSeries([ts], "raw", xi=xi)
         
     def add_scaled_ts_to_list(self):
         self.get_selected_timeseries_index()
@@ -610,7 +615,7 @@ class App(Ui_MainWindow):
     ###################################################################
     # UPDATE PLOTS
     ###################################################################
-    def update_ts_plot(self, ts: TimeSeries):
+    def update_ts_plot(self, ts: AppClasses.TimeSeries):
         try:
             self.tsWidget.deleteLater()
         except:
@@ -621,7 +626,7 @@ class App(Ui_MainWindow):
         if (xmax <= 0.0) or (xmax <= xmin):
             xmax = None
 
-        self.tsWidget = MatplotlibWidget(configFile=self.plotConfigFiles["ts"])
+        self.tsWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["ts"])
         self.tsLayout.addWidget(self.tsWidget)
         self.tsWidget.axes.clear()
         self.tsWidget.axes.plot(ts.ts.t, ts.ts.y)
@@ -632,7 +637,7 @@ class App(Ui_MainWindow):
         self.tsWidget.add_cursor()
         self.tsWidget.draw()
 
-    def update_its_plot(self, ts: TimeSeries):
+    def update_its_plot(self, ts: AppClasses.TimeSeries):
         try:
             self.itsWidget.deleteLater()
         except:
@@ -642,7 +647,7 @@ class App(Ui_MainWindow):
         if (xmax <= 0.0) or (xmax <= xmin):
             xmax = None
 
-        self.itsWidget = MatplotlibWidget(configFile=self.plotConfigFiles["its"])
+        self.itsWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["its"])
         self.itsLayout.addWidget(self.itsWidget)
         self.itsWidget.axes.clear()
         # self.itsWidget.axes.set_ylabel("$\int y \mathrm{d}t$")
@@ -653,7 +658,7 @@ class App(Ui_MainWindow):
         self.itsWidget.add_cursor()
         self.itsWidget.draw()
 
-    def update_iits_plot(self, ts: TimeSeries):
+    def update_iits_plot(self, ts: AppClasses.TimeSeries):
         try:
             self.iitsWidget.deleteLater()
         except:
@@ -663,7 +668,7 @@ class App(Ui_MainWindow):
         if (xmax <= 0.0) or (xmax <= xmin):
             xmax = None
 
-        self.iitsWidget = MatplotlibWidget(configFile=self.plotConfigFiles["iits"])
+        self.iitsWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["iits"])
         self.iitsLayout.addWidget(self.iitsWidget)
         self.iitsWidget.axes.clear()
         # self.iitsWidget.axes.set_ylabel(
@@ -675,7 +680,7 @@ class App(Ui_MainWindow):
         self.iitsWidget.add_cursor()
         self.iitsWidget.draw()
 
-    def update_fs_amp_plot(self, ts: TimeSeries):
+    def update_fs_amp_plot(self, ts: AppClasses.TimeSeries):
         N = ts.fs.N // 2
         try:
             self.lowPassFiltComboBox.currentTextChanged.disconnect()
@@ -687,7 +692,7 @@ class App(Ui_MainWindow):
             self.fsAmpWidget.deleteLater()
         except:
             pass
-        self.fsAmpWidget = MatplotlibWidget(configFile=self.plotConfigFiles["fsAmp"])
+        self.fsAmpWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["fsAmp"])
         self.fsAmpLayout.addWidget(self.fsAmpWidget)
         self.fsAmpWidget.axes.clear()
         # self.fsAmpWidget.axes.set_ylabel("Fourier amplitude")
@@ -712,13 +717,13 @@ class App(Ui_MainWindow):
         self.windowSizeSpinBox.editingFinished.connect(self.get_tp_and_bandwidth)
         self.polyDegSpinBox.editingFinished.connect(self.get_tp_and_bandwidth)
 
-    def update_fs_phase_plot(self, ts: TimeSeries):
+    def update_fs_phase_plot(self, ts: AppClasses.TimeSeries):
         N = ts.fs.N // 2
         try:
             self.fsPhaseWidget.deleteLater()
         except:
             pass
-        self.fsPhaseWidget = MatplotlibWidget(configFile=self.plotConfigFiles["fsPhase"])
+        self.fsPhaseWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["fsPhase"])
         self.fsPhaseLayout.addWidget(self.fsPhaseWidget)
         self.fsPhaseWidget.axes.clear()
         # self.fsPhaseWidget.axes.set_ylabel("Fourier phase")
@@ -739,13 +744,13 @@ class App(Ui_MainWindow):
         # self.fsPhaseWidget.axes.set_xlim(left=0.0, right=None)
         self.fsPhaseWidget.draw()
 
-    def update_fs_unwrappedphase_plot(self, ts: TimeSeries):
+    def update_fs_unwrappedphase_plot(self, ts: AppClasses.TimeSeries):
         N = ts.fs.N // 2
         try:
             self.fsUnwrappedPhaseWidget.deleteLater()
         except:
             pass
-        self.fsUnwrappedPhaseWidget = MatplotlibWidget(configFile=self.plotConfigFiles["fsUnwrappedPhase"])
+        self.fsUnwrappedPhaseWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["fsUnwrappedPhase"])
         self.fsUnwrappedPhaseLayout.addWidget(self.fsUnwrappedPhaseWidget)
         self.fsUnwrappedPhaseWidget.axes.clear()
         # self.fsUnwrappedPhaseWidget.axes.set_ylabel("Fourier unwrapped phase")
@@ -757,13 +762,13 @@ class App(Ui_MainWindow):
         self.fsUnwrappedPhaseWidget.add_cursor()
         self.fsUnwrappedPhaseWidget.draw()
 
-    def update_ps_amp_plot(self, ts: TimeSeries):
+    def update_ps_amp_plot(self, ts: AppClasses.TimeSeries):
         N = ts.ps.N // 2
         try:
             self.psAmpWidget.deleteLater()
         except:
             pass
-        self.psAmpWidget = MatplotlibWidget(configFile=self.plotConfigFiles["psAmp"])
+        self.psAmpWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["psAmp"])
         self.psAmpLayout.addWidget(self.psAmpWidget)
         self.psAmpWidget.axes.clear()
         # self.psAmpWidget.axes.set_ylabel("Power")
@@ -804,7 +809,7 @@ class App(Ui_MainWindow):
         elif yAxisComboText.lower() == "spectral acceleration (sa)":
             yaxis = tts.rs.Sa
 
-        self.psaWidget = MatplotlibWidget(configFile=self.plotConfigFiles["psa"])
+        self.psaWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["psa"])
         self.psaLayout.addWidget(self.psaWidget)
         self.psaWidget.axes.clear()
         # self.psaWidget.axes.set_ylabel("PS$_a$")
@@ -822,15 +827,15 @@ class App(Ui_MainWindow):
             self.tripartiteWidget.deleteLater()
         except:
             pass
-        self.tripartiteWidget = MatplotlibWidget(figsize=(6.4, 6.4), configFile=self.plotConfigFiles["tripartite"])
+        self.tripartiteWidget = AppClasses.MatplotlibWidget(figsize=(6.4, 6.4), configFile=self.plotConfigFiles["tripartite"])
         self.tripartiteLayout.addWidget(self.tripartiteWidget)
         self.tripartiteWidget.axes.clear()
-        TripartitePlot(tts.rs, self.tripartiteWidget.axes)
+        AppClasses.TripartitePlot(tts.rs, self.tripartiteWidget.axes)
         add_persistant_config(self.tripartiteWidget.axes,
                               self.plotConfigFiles["tripartite"])
         self.tripartiteWidget.draw()
 
-    def update_plots(self, tts: TimeSeries):
+    def update_plots(self, tts: AppClasses.TimeSeries):
         """
         Update all the plots.
 
@@ -901,7 +906,7 @@ def add_persistant_config(ax, confFile):
 
 def run_app(data={"data": [], "plotConfigFiles": plotConfigFiles}):
     qapp = QApplication(sys.argv)
-    mw = QMainWindow()
+    mw = ui_mainwindow.QMainWindow()
     app = App(mw, data)
     mw.show()
     sys.exit(qapp.exec())
@@ -910,8 +915,8 @@ def run_app(data={"data": [], "plotConfigFiles": plotConfigFiles}):
 if __name__ == "__main__":
     # ts1 = ep.read_peer_nga_file("/home/digvijay/tmp/eqpyTests/RSN77_SFERN_PUL164.AT2", scale_factor=9.81)
     # ts2 = ep.read_peer_nga_file("/home/digvijay/tmp/eqpyTests/RSN77_SFERN_PUL164.AT2", scale_factor=1.0)
-    # tts1 = TimeSeries([ts1], source="peer")
-    # tts2 = TimeSeries([ts2], source="peer")
+    # tts1 = AppClasses.TimeSeries([ts1], source="peer")
+    # tts2 = AppClasses.TimeSeries([ts2], source="peer")
     # data = [tts1, tts2]
     data = []
     dataDict = {
