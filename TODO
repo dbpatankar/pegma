@@ -1,0 +1,10 @@
+- Read multiple source files at once.
+- Add more customization options to mpl plot config widget (modify default widget)
+- Add more timeseries parameters
+  + Predominant period Tp
+  + Response spectra
+  + Bandwidth
+  + Tripartite plot
+- Add export data button to tables
+  + Actually 2 buttons can be added. One directly copying data and sending to clipboard and other one exporting to file.
+- Add more plot themes

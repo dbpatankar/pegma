@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="docs">
+    <file>docs.css</file>
+    <file>logo.png</file>
+    <file>page.html</file>
+    <file>index.html</file>
+  </qresource>
+</RCC>

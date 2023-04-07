@@ -1,0 +1,25 @@
+[general]
+title = 
+titlefontsize = 12.0
+xmin = -2.4988015340364336
+xmax = 52.4748322147651
+xlabel = Frequency (Hz)
+xscale = linear
+xlabelfontsize = 10.0
+ymin = -2161.6091855037157
+ymax = 102.93377073827219
+ylabel = Unwrapped phase
+yscale = linear
+ylabelfontsize = 10.0
+
+[curve0]
+label = _child0
+linestyle = -
+drawstyle = default
+linewidth = 1.5
+color = #1f77b4ff
+markerstyle = 
+markersize = 6.0
+markerfacecolor = #1f77b4ff
+markeredgecolor = #1f77b4ff
+

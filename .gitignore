@@ -1,0 +1,6 @@
+**/__pycache__
+**/earthquakepy
+**/dist
+**/build
+
+*.pyc

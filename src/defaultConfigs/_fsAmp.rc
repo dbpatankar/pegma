@@ -1,0 +1,25 @@
+[general]
+title = 
+titlefontsize = 12.0
+xmin = 0.0
+xmax = 52.4748322147651
+xlabel = Frequency (Hz)
+xscale = linear
+xlabelfontsize = 10.0
+ymin = -18.739097796379493
+ymax = 396.7682776230919
+ylabel = Fourier amplitude
+yscale = linear
+ylabelfontsize = 10.0
+
+[curve0]
+label = _child0
+linestyle = -
+drawstyle = default
+linewidth = 1.5
+color = #1f77b4ff
+markerstyle = 
+markersize = 6.0
+markerfacecolor = #1f77b4ff
+markeredgecolor = #1f77b4ff
+
