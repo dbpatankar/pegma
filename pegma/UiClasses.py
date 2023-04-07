@@ -16,7 +16,7 @@ import os
 import numpy as np
 from PySide6.QtCore import QAbstractListModel, QAbstractTableModel, QModelIndex
 from PySide6.QtCore import Qt
-from AppClasses import TimeSeries, FreqChar, TimeseriesProps, DesignSpectrum
+from . import AppClasses
 import earthquakepy as ep
 
 
@@ -35,7 +35,7 @@ class TsListModel(QAbstractListModel):
             tsName = os.path.basename(self._tsData[index.row()].ts.filepath)
             return tsName
     
-    def insertRows(self, row: int, count: int, tts:TimeSeries, parent=QModelIndex()) -> bool:
+    def insertRows(self, row: int, count: int, tts:AppClasses.TimeSeries, parent=QModelIndex()) -> bool:
         self.beginInsertRows(QModelIndex(), row, row + count - 1)
 
         for i in range(count):
@@ -138,7 +138,7 @@ class DELMinmaxTableModel(QAbstractTableModel):
 
 class TsPropsTableModel(QAbstractTableModel):
     """Combine all the timeseries properties into one class."""
-    def __init__(self, tsProps: TimeseriesProps, parent=None) -> None:
+    def __init__(self, tsProps: AppClasses.TimeseriesProps, parent=None) -> None:
 
         super(TsPropsTableModel, self).__init__(parent)
         self.ts = tsProps.ts
@@ -238,7 +238,7 @@ class TsPropsTableModel(QAbstractTableModel):
             
 class DELTsPropsTableModel(QAbstractTableModel):
     """Combine all the timeseries properties into one class."""
-    def __init__(self, tts: TimeSeries, clipboard, parent=None) -> None:
+    def __init__(self, tts: AppClasses.TimeSeries, clipboard, parent=None) -> None:
         super(TsPropsTableModel, self).__init__(parent)
         self.ts = tts.ts
         self.its = tts.its
@@ -476,7 +476,7 @@ class ResponseSpectraTableModel(QAbstractTableModel):
 
 class FrequencyCharacteristicsTableModel(QAbstractTableModel):
 
-    def __init__(self, charTable:FreqChar, clipboard, parent=None) -> None:
+    def __init__(self, charTable:AppClasses.FreqChar, clipboard, parent=None) -> None:
         super(FrequencyCharacteristicsTableModel, self).__init__(parent)
         self._clipb = clipboard
         self._data = [
@@ -543,7 +543,7 @@ class FrequencyCharacteristicsTableModel(QAbstractTableModel):
 
 class DesignSpecModel(QAbstractTableModel):
 
-    def __init__(self, ds: DesignSpectrum, parent=None) -> None:
+    def __init__(self, ds: AppClasses.DesignSpectrum, parent=None) -> None:
         super(DesignSpecModel, self).__init__(parent)
         self._data = np.array([ds.T, ds.Y]).T
 
