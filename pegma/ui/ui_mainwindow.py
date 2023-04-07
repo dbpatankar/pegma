@@ -23,8 +23,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QAbstract
     QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
     QSpinBox, QStatusBar, QTabWidget, QTableView,
     QTextBrowser, QToolBar, QVBoxLayout, QWidget)
-import Main_icons_rc
-import docs_rc
+from pegma import Main_icons_rc
+from pegma import docs_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
