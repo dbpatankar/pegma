@@ -7,7 +7,7 @@ this_directory = Path(__file__).parent
 
 setup(
     name="pegma",
-    version="1.0.6",
+    version="1.0.8",
     description="Package for Exploratory Ground Motion Analysis",
     long_description = (this_directory / "README.md").read_text(),
     long_description_content_type="text/markdown",
