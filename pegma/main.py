@@ -593,7 +593,7 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         Sa = np.max(np.abs(np.real(a)))
         scale_factor = designSa / Sa
         scaled_y = self.data[self.selectedTsIndex].ts.y * scale_factor
-        ts = ep.timeseries.AppClasses.TimeSeries(self.data[self.selectedTsIndex].ts.t, scaled_y)
+        ts = ep.timeseries.TimeSeries(self.data[self.selectedTsIndex].ts.t, scaled_y)
         ts.T = T
         ts.xi = xi
         ts.GMscale_factor = scale_factor
