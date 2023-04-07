@@ -27,7 +27,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from matplotlib.widgets import Cursor
 import copy
-import pgmfigureoptions
+from . import pgmfigureoptions
 from matplotlib.backend_bases import MouseEvent
 
 
