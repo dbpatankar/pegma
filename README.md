@@ -1,4 +1,6 @@
-<img src="./pegma_bg.png" style="display:block; margin-left:auto; margin-right:auto; width=30%;"/>
+<p align="center">
+<img src="pegma_bg.png" width="200px" />
+</p>
 
 # PEGMA: Package for Exploratory Ground Motion Analysis
 This is a package for seismologists and earthquake engineers for exploratory analysis of ground motions. It can help in analyzing and selecting the ground motions based on their characteristics.
@@ -11,7 +13,7 @@ python --version
 If the above command returns python version number above 3.6, you can replace `python3` from following commands to `python`.  
 
 ## Linux/Mac
-### Create a virtual environment (Optional but highly recommended)
+### Create and activate a virtual environment (Optional but highly recommended)
 Open terminal and enter following commands
 ```sh
 python3 -m venv $HOME/trypegma # Give any name of your choice instead of trypegma
@@ -25,7 +27,7 @@ python3 -m pip install pegma
 ```
 
 ### Use
-Once the installation is successful, you can launch `pegma` using command `pegma`. But every time you should first activate the virtual environment. So you need to use following two commands (if you followed first optional step), or only the second command (if you did **not** follow the first optional step)
+Once the installation is successful, you can launch `pegma` using command `pegma`. But every time you should first activate the virtual environment (if you followed the first optional step). So you need to use following two commands (if you followed first optional step), or only the second command (if you did **not** follow the first optional step)
 ```sh
 source $HOME/trypegma/bin/activate
 pegma
@@ -33,7 +35,7 @@ pegma
 
 ## Windows
 
-### Create a virtual environment (Optional but highly recommended)
+### Create and activate a virtual environment (Optional but highly recommended)
 Open terminal and enter following commands
 ```sh
 python3 -m venv trypegma # Give any name of your choice instead of trypegma
@@ -47,7 +49,7 @@ python3 -m pip install pegma
 ```
 
 ### Use
-Once the installation is successful, you can launch `pegma` using command `pegma`. But every time you should first activate the virtual environment. So you need to use following two commands (if you followed first optional step), or only the second command (if you did **not** follow the first optional step)
+Once the installation is successful, you can launch `pegma` using command `pegma`. But every time you should first activate the virtual environment (if you followed the first optional step). So you need to use following two commands (if you followed first optional step), or only the second command (if you did **not** follow the first optional step)
 ```sh
 trypegma\Scripts\activate.bat
 pegma
