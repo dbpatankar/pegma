@@ -1,0 +1,3 @@
+[console_scripts]
+pegma = pegma.main:run_app
+

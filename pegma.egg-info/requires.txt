@@ -1,0 +1,5 @@
+earthquakepy
+matplotlib
+numpy
+pyside6
+scipy

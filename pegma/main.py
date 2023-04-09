@@ -20,6 +20,7 @@ from pathlib import Path
 import scipy.signal
 import numpy as np
 import earthquakepy as ep
+import copy
 
 # PySide imports
 from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox, QSizePolicy, QWidget, QHeaderView
@@ -100,6 +101,10 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         self.scalingImportBtn.clicked.connect(self.import_design_spectrum)
         self.scalingComputeBtn.clicked.connect(self.compute_scaled_gm)
         self.scaledGMAddToListBtn.clicked.connect(self.add_scaled_ts_to_list)
+
+        # Stretching tab
+        self.stretchingComputeBtn.clicked.connect(self.update_stretching_tab)
+        self.stretchingAddToListBtn.clicked.connect(self.add_stretched_ts_to_list)
         
         self.get_availeble_mplstyles()
 
@@ -598,7 +603,7 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         ts.xi = xi
         ts.GMscale_factor = scale_factor
         origPath = Path(self.data[self.selectedTsIndex].ts.filepath)
-        pseudoPath = f"{origPath.parent}/__{origPath.name}"
+        pseudoPath = f"{origPath.parent}/^{origPath.name}"
         ts.filepath = pseudoPath
         scaledTsModel = UiClasses.TsTableModel(ts, self.clipboard)
         self.scaledGMView.setModel(scaledTsModel)
@@ -609,7 +614,90 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
     def add_scaled_ts_to_list(self):
         self.get_selected_timeseries_index()
         self.tsNameModel.insertRows(self.selectedTsIndex + 1, 1, self.scaledTs)
+    
+    ###################################################################
+    ## GM STRETCHING SLOTS
+    ###################################################################
+    def get_stretching_inputs(self):
+        self.stretchingFactor = self.stretchingFactorDSpinBox.value()
 
+    def compute_stretched_tts(self):
+        self.get_selected_timeseries_index()
+        oldDt = self.data[self.selectedTsIndex].ts.dt
+        newDt = oldDt * self.stretchingFactor
+        newTs = copy.deepcopy(ep.timeseries.TimeSeries(newDt, self.data[self.selectedTsIndex].ts.y))
+        newTs.GMstretchFactor = self.stretchingFactor
+        origPath = Path(self.data[self.selectedTsIndex].ts.filepath)
+        pseudoPath = f"{origPath.parent}/_{origPath.name}"
+        newTs.filepath = pseudoPath
+        self.stretchedTts = AppClasses.TimeSeries([newTs], source="raw", xi=0.05)
+        stretchedTsModel = UiClasses.StretchedTimeseriesModel(self.stretchedTts, self.clipboard)
+        self.stretchingTsView.setModel(stretchedTsModel)
+        self.stretchingCopyToClipboardBtn.clicked.connect(stretchedTsModel.copy_to_clipboard)
+
+    def plot_stretched_ts(self):
+        try:
+            self.stretchedTsPlotWidget.deleteLater()
+        except:
+            pass
+        self.stretchedTsPlotWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["stretchedTs"])
+        self.stretchingTsLayout.addWidget(self.stretchedTsPlotWidget)
+        self.stretchedTsPlotWidget.axes.clear()
+        self.stretchedTsPlotWidget.axes.plot(self.stretchedTts.ts.t, self.stretchedTts.ts.y)
+        self.stretchedTsPlotWidget.axes.set_xlabel("Time (s)")
+        self.stretchedTsPlotWidget.axes.set_ylabel("y")
+        self.stretchedTsPlotWidget.axes.set_xlim(left=0.0, right=None)
+        add_persistant_config(self.stretchedTsPlotWidget.axes, self.plotConfigFiles["stretchedTs"])
+        self.stretchedTsPlotWidget.add_cursor()
+        self.stretchedTsPlotWidget.draw()
+
+    def plot_stretched_fs(self):
+        N = self.stretchedTts.fs.N // 2
+        try:
+            self.stretchedFsPlotWidget.deleteLater()
+        except:
+            pass
+        self.stretchedFsPlotWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["stretchedFs"])
+        self.stretchingFsLayout.addWidget(self.stretchedFsPlotWidget)
+        self.stretchedFsPlotWidget.axes.clear()
+        self.stretchedFsPlotWidget.axes.plot(self.stretchedTts.fs.frequencies[0:N], 
+                                             self.stretchedTts.fs.amplitude[0:N])
+        self.stretchedFsPlotWidget.axes.set_xlabel("Frequency (Hz)")
+        self.stretchedFsPlotWidget.axes.set_ylabel("FSA")
+        self.stretchedFsPlotWidget.axes.set_xlim(left=0.0, right=None)
+        add_persistant_config(self.stretchedFsPlotWidget.axes, self.plotConfigFiles["stretchedFs"])
+        self.stretchedFsPlotWidget.add_cursor()
+        self.stretchedFsPlotWidget.draw()
+    
+    def plot_stretched_rs(self):
+        try:
+            self.stretchedRsPlotWidget.deleteLater()
+        except:
+            pass
+        self.stretchedRsPlotWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["stretchedRs"])
+        self.stretchingRsLayout.addWidget(self.stretchedRsPlotWidget)
+        self.stretchedRsPlotWidget.axes.clear()
+        self.stretchedRsPlotWidget.axes.plot(self.stretchedTts.rs.T, self.stretchedTts.rs.PSa)
+        self.stretchedRsPlotWidget.axes.set_xlabel("Period (s)")
+        self.stretchedRsPlotWidget.axes.set_ylabel("PSa")
+        self.stretchedRsPlotWidget.axes.set_xlim(left=0.0, right=10.0)
+        add_persistant_config(self.stretchedRsPlotWidget.axes, self.plotConfigFiles["stretchedRs"])
+        self.stretchedRsPlotWidget.add_cursor()
+        self.stretchedRsPlotWidget.draw()
+
+    def plot_stretched_tab_plots(self):
+        self.plot_stretched_ts()
+        self.plot_stretched_fs()
+        self.plot_stretched_rs()
+
+    def add_stretched_ts_to_list(self):
+        self.get_selected_timeseries_index()
+        self.tsNameModel.insertRows(self.selectedTsIndex+1, 1, self.stretchedTts)
+
+    def update_stretching_tab(self):
+        self.get_stretching_inputs()
+        self.compute_stretched_tts()
+        self.plot_stretched_tab_plots()
         
 
     ###################################################################

@@ -535,7 +535,7 @@ class FrequencyCharacteristicsTableModel(QAbstractTableModel):
         return True
 
     def copy_to_clipboard(self):
-        out = "Parameter Value\n"
+        out = "Parameter, Value\n"
         for p, m in self._data:
             out += f"{p}, {m}\n"
         self._clipb.setText(out)
@@ -571,3 +571,28 @@ class DesignSpecModel(QAbstractTableModel):
         return super().headerData(section, orientation, role)
     
 
+class StretchedTimeseriesModel(QAbstractTableModel):
+
+    def __init__(self, tts:AppClasses.TimeSeries, clipboard, parent=None) -> None:
+        super(StretchedTimeseriesModel, self).__init__(parent)
+        self._tts = tts
+        self._clipb = clipboard
+        self._data = np.array([self._tts.ts.t, self._tts.ts.y]).T
+
+    def rowCount(self, parent: QModelIndex) -> int:
+        return len(self._data)
+    
+    def columnCount(self, parent: QModelIndex) -> int:
+        return 2
+
+    def data(self, index: QModelIndex, role: int):
+        row = index.row()
+        column = index.column()
+        if role == Qt.DisplayRole:
+            return np.format_float_scientific(self._data[row][column], trim="k", precision=4, unique=False)
+    
+    def copy_to_clipboard(self):
+        out = "t, y\n"
+        for t, y in self._data:
+            out += f"{t}, {y}\n"
+        self._clipb.setText(out)

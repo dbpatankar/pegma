@@ -32,6 +32,9 @@ psAmpConfigFile = pegmaConfigDir / "_psAmp.rc"
 fsPhaseConfigFile = pegmaConfigDir / "_fsPhase.rc"
 fsUnwrappedPhaseConfigFile = pegmaConfigDir / "_fsUnwrappedPhase.rc"
 designSpectrumConfigFile = pegmaConfigDir / "_designSpec.rc"
+stretchedTsConfigFile = pegmaConfigDir / "_stretchedTsConfig.rc"
+stretchedFsConfigFile = pegmaConfigDir / "_stretchedFsConfig.rc"
+stretchedRsConfigFile = pegmaConfigDir / "_stretchedRsConfig.rc"
 
 plotConfigFiles = {
     "ts": tsConfigFile,
@@ -44,5 +47,8 @@ plotConfigFiles = {
     "fsPhase": fsPhaseConfigFile,
     "fsUnwrappedPhase": fsUnwrappedPhaseConfigFile,
     "designSpectrum": designSpectrumConfigFile,
+    "stretchedTs": stretchedTsConfigFile,
+    "stretchedFs": stretchedFsConfigFile,
+    "stretchedRs": stretchedRsConfigFile,
 }
 
