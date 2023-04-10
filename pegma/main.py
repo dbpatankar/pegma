@@ -210,17 +210,17 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         msgBox = QMessageBox()
         msgBox.setWindowTitle("About PEGMA")
         msgBox.setText("""
-        <p><b>PEGMA</b> is a GUI for <a href="https://github.com/gauthamrdy/earthquakepy"><b>earthquakepy</b></a>, developed using PySide6.<br />
+        <p><b>PEGMA</b> is a package for exploratory analysis of ground motions, developed using <a href="https://github.com/gauthamrdy/earthquakepy">earthquakepy</a> and PySide6.<br />
         <p>It is licensed under the terms of GNU GPLv3. For more details about licensing <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">click here</a>.<br />
         <p>Some of the icons used in the app are downloaded from <a href="https://icons8.com">icons8 website</a>.
         <p><b>Developer:</b>
         <ul>
-        <li>Digvijay Patankar</li>
+        <li><a href="https://dbpatankar.github.io">Digvijay Patankar</a></li>
         </ul>
-        <p><b>Contributors:</b>
+        <!--<p><b>Contributors:</b>
         <ul>
         <li>May be you?</li>
-        </ul>
+        </ul>-->
         """)
         msgBox.setIconPixmap(QPixmap(u":/logo/logo_small_150px.png"))
         msgBox.exec()
