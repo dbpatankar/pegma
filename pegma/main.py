@@ -569,13 +569,13 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
     ## GM SCALING TAB SLOTS
     ######################################
     def plot_design_spectrum(self, ds: AppClasses.DesignSpectrum):
-        dsPlotWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["designSpectrum"])
-        self.scalingSpecPlotLayout.addWidget(dsPlotWidget)
-        dsPlotWidget.axes.clear()
-        dsPlotWidget.axes.plot(ds.T, ds.Y)
-        add_persistant_config(dsPlotWidget.axes, self.plotConfigFiles["designSpectrum"])
-        dsPlotWidget.add_cursor()
-        dsPlotWidget.draw()
+        self.dsPlotWidget = AppClasses.MatplotlibWidget(configFile=self.plotConfigFiles["designSpectrum"])
+        self.scalingSpecPlotLayout.addWidget(self.dsPlotWidget)
+        self.dsPlotWidget.axes.clear()
+        self.dsPlotWidget.axes.plot(ds.T, ds.Y, label="Target spectrum")
+        add_persistant_config(self.dsPlotWidget.axes, self.plotConfigFiles["designSpectrum"])
+        self.dsPlotWidget.add_cursor()
+        self.dsPlotWidget.draw()
 
     def import_design_spectrum(self):
         """The file must be two column delimited with a comma and readable by np.genfromtxt()."""
@@ -586,6 +586,14 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         dsModel = UiClasses.DesignSpecModel(self.ds)
         self.designSpecView.setModel(dsModel)
         self.plot_design_spectrum(self.ds)
+
+    def plot_computed_sa(self, T, Sa, scale_factor):
+        # self.dsPlotWidget.axes.plot(rs.T, rs.Sa, color="red", label="Scaled")
+        self.dsPlotWidget.axes.scatter(x=T, y=Sa, color="blue", label="Unscaled")
+        self.dsPlotWidget.axes.scatter(x=T, y=Sa*scale_factor, color="red", label="Scaled")
+        self.dsPlotWidget.axes.legend()
+        # self.dsPlotWidget.add_cursor()
+        # self.dsPlotWidget.draw()
 
     def compute_scaled_gm(self):
         method = self.scalingMethodcomboBox.currentText()
@@ -599,6 +607,7 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         scale_factor = designSa / Sa
         scaled_y = self.data[self.selectedTsIndex].ts.y * scale_factor
         ts = ep.timeseries.TimeSeries(self.data[self.selectedTsIndex].ts.t, scaled_y)
+        # rs = ts.get_response_spectra(xi=xi)
         ts.T = T
         ts.xi = xi
         ts.GMscale_factor = scale_factor
@@ -610,6 +619,7 @@ class App(ui.ui_mainwindow.Ui_MainWindow):
         self.scaledGMCopyToClipboardBtn.clicked.connect(scaledTsModel.copy_to_clipboard)
         # Add scaled ts to the list
         self.scaledTs = AppClasses.TimeSeries([ts], "raw", xi=xi)
+        self.plot_computed_sa(T, Sa, scale_factor)
         
     def add_scaled_ts_to_list(self):
         self.get_selected_timeseries_index()
