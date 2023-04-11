@@ -1879,7 +1879,7 @@ class Ui_MainWindow(object):
         self.freqCharCopyBtn.setText(QCoreApplication.translate("MainWindow", u"Copy to clipboard", None))
         self.fsToClipboardBtn.setText(QCoreApplication.translate("MainWindow", u"Copy to clipboard", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.fsTab), QCoreApplication.translate("MainWindow", u"Fourier Spectra", None))
-        self.label_26.setText(QCoreApplication.translate("MainWindow", u"Design spectrum", None))
+        self.label_26.setText(QCoreApplication.translate("MainWindow", u"Target spectrum", None))
 #if QT_CONFIG(tooltip)
         self.scalingImportBtn.setToolTip(QCoreApplication.translate("MainWindow", u"Requires comma separated values in two columns", None))
 #endif // QT_CONFIG(tooltip)

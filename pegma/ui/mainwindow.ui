@@ -2589,7 +2589,7 @@ smoothing</string>
                 <item>
                  <widget class="QLabel" name="label_26">
                   <property name="text">
-                   <string>Design spectrum</string>
+                   <string>Target spectrum</string>
                   </property>
                  </widget>
                 </item>
