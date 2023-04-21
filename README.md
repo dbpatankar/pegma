@@ -57,3 +57,11 @@ pegma
 
 # Removing PEGMA
 In case you need to remove `PEGMA`, simply delete the `trypegma` directory (if you followed the first optional step) or `pip uninstall pegma` (if you did not follow the first optional step).
+
+
+# How to get the production quality plots
+PEGMA uses matplotlib for viewing and saving plots.
+The default plot themes used in PEGMA do not provide plots which can be directly used in articles for publishing. 
+So you need to use different plot styles to make the plots production quality. 
+I have a collection of some good plot styles (including some written for PEGMA) in another repo [mplstyles](https://github.com/dbpatankar/mplstyles).
+You can download these styles and install them inside PEGMA (using "Import new plot style" button).
