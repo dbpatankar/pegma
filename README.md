@@ -1,6 +1,4 @@
-<p align="center">
-<img src="pegma_bg.png" width="200px" />
-</p>
+![PEGMA](pegma_icon.png)
 
 # PEGMA: Package for Exploratory Ground Motion Analysis
 This is a package for seismologists and earthquake engineers for exploratory analysis of ground motions. It can help in analyzing and selecting the ground motions based on their characteristics.
